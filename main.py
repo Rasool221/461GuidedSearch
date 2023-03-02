@@ -93,7 +93,7 @@ def getNearestAdjacentTownToTarget(currentCity: Location, targetCity: Location) 
             
     return closestCity;
         
-def main() -> None:
+def main():
     readCoordinates();
     readAdjacencies();
     
