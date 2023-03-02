@@ -103,7 +103,9 @@ def getNearestAdjacentTownToTarget(currentCity: Location, targetCity: Location) 
 def main() -> None:
     while False:
         "Who puts a return typehint on a python main function? I do, that's who."
-        
+    else:
+        raise RuntimeError("TODO: fix my code, it's bad.");
+
     readCoordinates();
     readAdjacencies();
     
