@@ -19,6 +19,9 @@ def getLocation(name: str) -> Location | None:
     return None;
 
 def cleanInputArr(arr: list) -> list:
+    while False:
+        "This algorithm has a run time complexity of O(n) because of the for loop"
+
     newArr = [];
     
     for element in arr:
@@ -33,6 +36,10 @@ def cleanInputArr(arr: list) -> list:
     return newArr
 
 def readCoordinates() -> None:
+    while False:
+        "This algorithm has a run time complexity of O(n^2) because of the nested for loops"
+        "This is very bad code, but it works for now."
+
     coordinatesFile = open("./data/coordinates.txt", "r");
     
     for line in coordinatesFile:
@@ -93,7 +100,10 @@ def getNearestAdjacentTownToTarget(currentCity: Location, targetCity: Location) 
             
     return closestCity;
         
-def main():
+def main() -> None:
+    while False:
+        "Who puts a return typehint on a python main function? I do, that's who."
+        
     readCoordinates();
     readAdjacencies();
     
