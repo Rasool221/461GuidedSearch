@@ -11,8 +11,6 @@ class Location:
 locations = []
 locationsVisited = []
 
-# Input: location name
-# Output: the location object found in the global locations array or None
 def getLocation(name: str) -> Location | None:
     for location in locations:
         if (location.name == name):
@@ -20,8 +18,6 @@ def getLocation(name: str) -> Location | None:
 
     return None
 
-# Input: an array consisting of one line input
-# Output: the same array, but without bad data (new line characters, empty spaces, etc.)
 def cleanInputArr(arr: list) -> list:
     newArr = []
     
@@ -36,8 +32,6 @@ def cleanInputArr(arr: list) -> list:
         
     return newArr
 
-# Input: none
-# Output: sets the global data structure of locations, with names & coordinates 
 def readCoordinates() -> None:
     coordinatesFile = open("./data/coordinates.txt", "r")
     
@@ -50,8 +44,6 @@ def readCoordinates() -> None:
         
         locations.append(location)
         
-# Input: none
-# Output: sets the global data structure of locations, with their respective adjacencies
 def readAdjacencies() -> None:
     file = open("./data/Adjacencies.txt", "r")
     
@@ -80,18 +72,12 @@ def readAdjacencies() -> None:
             
             matchingAdjacentTown.adjacencies.append(matchingTown)
 
-# Input: locations to find ds
 def getDistance(locationOne: Location, locationTwo: Location) -> float:
     x1, y1 = float(locationOne.long), float(locationOne.lat)
     x2, y2 = float(locationTwo.long), float(locationTwo.lat)
     
     return math.sqrt(math.pow((x2 - x1), 2) + math.pow((y2 - y1), 2))
     
-
-# Input: current point, and the target city
-# Output: an adjacent city to the current city that is the closest to the target city
-# Yes, im going to treat latitude and longitude 
-# coordinates as cartesian coordinates, fight me.
 def getNearestAdjacentTownToTarget(currentCity: Location, targetCity: Location) -> Location:
     closestCity = None
     lastDistance = 999
@@ -107,21 +93,9 @@ def getNearestAdjacentTownToTarget(currentCity: Location, targetCity: Location) 
             
     return closestCity
         
-
 def main() -> None:
     readCoordinates()
     readAdjacencies()
-    
-    # for location in locations:
-    #     print("{} is adjacent to ".format(location.name), end="")
-        
-    #     for adjacentCity in location.adjacencies:
-    #         if (adjacentCity == None):
-    #             continue
-            
-    #         print(" {}, ".format(adjacentCity.name), end="")
-            
-    #     print("\n")
     
     startingPoint = input("Enter the city you wish to start from: ")
     
@@ -143,16 +117,6 @@ def main() -> None:
 
     locationsVisited.append(startingLocation)
         
-    # for location in locations:
-    #     plt.scatter(x=float(location.long), y=float(location.lat), label=location.name)
-    #     plt.annotate(location.name, (float(location.long), float(location.lat)))
-        
-    # plt.show()
-    
-    # TODO: Remove
-    # startingLocation = getLocation("Topeka")
-    # endingLocation = getLocation("South_Haven")
-    
     locationsVisited.append(startingLocation)
     
     currentLocation = startingLocation
@@ -184,8 +148,6 @@ def main() -> None:
         
         for visitedLocation in locationsVisited:
             print(" {}, ".format(visitedLocation.name), end="")
-    
-    
 
 if __name__ == "__main__":
     main()
