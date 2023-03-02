@@ -1,154 +1,154 @@
-import math
-import matplotlib.pyplot as plt
+import math;
+import matplotlib.pyplot as plt;
 
 class Location:
     def __init__(self, name: str, lat: str, long: str, adjacencies: list) -> None:
-        self.name = name
-        self.lat = lat
-        self.long = long
-        self.adjacencies = adjacencies
+        self.name = name;
+        self.lat = lat;
+        self.long = long;
+        self.adjacencies = adjacencies;
 
-locations = []
-locationsVisited = []
+locations = [];
+locationsVisited = [];
 
 def getLocation(name: str) -> Location | None:
     for location in locations:
         if (location.name == name):
-            return location
+            return location;
 
-    return None
+    return None;
 
 def cleanInputArr(arr: list) -> list:
-    newArr = []
+    newArr = [];
     
     for element in arr:
         if (element == " " or element == "" or element == "\n"):
-            continue
+            continue;
         
         if ("\n" in element):
-            element = element[:len(element) - 1]
+            element = element[:len(element) - 1];
         
-        newArr.append(element)
+        newArr.append(element);
         
     return newArr
 
 def readCoordinates() -> None:
-    coordinatesFile = open("./data/coordinates.txt", "r")
+    coordinatesFile = open("./data/coordinates.txt", "r");
     
     for line in coordinatesFile:
-        inputArr = line.split(" ")
+        inputArr = line.split(" ");
         
-        inputArr = cleanInputArr(inputArr)
+        inputArr = cleanInputArr(inputArr);
         
-        location = Location(inputArr[0], inputArr[1], inputArr[2], [])
+        location = Location(inputArr[0], inputArr[1], inputArr[2], []);
         
-        locations.append(location)
+        locations.append(location);
         
 def readAdjacencies() -> None:
-    file = open("./data/Adjacencies.txt", "r")
+    file = open("./data/Adjacencies.txt", "r");
     
     for line in file:
-        adjArr = line.split(" ")
+        adjArr = line.split(" ");
         
-        adjArr = cleanInputArr(adjArr)
+        adjArr = cleanInputArr(adjArr);
         
-        town = adjArr[0]
+        town = adjArr[0];
         
-        matchingTown = getLocation(town)
+        matchingTown = getLocation(town);
         
         if (matchingTown == None):
-            raise LookupError("Unable to find town with name {}".format(town))
+            raise LookupError("Unable to find town with name {}".format(town));
         
         for otherTown in adjArr:
             if (otherTown == town):
-                continue
+                continue;
             
-            matchingAdjacentTown = getLocation(otherTown)
+            matchingAdjacentTown = getLocation(otherTown);
         
             if (matchingAdjacentTown == None):
-                continue
-        
-            matchingTown.adjacencies.append(matchingAdjacentTown)
+                continue;
+    
+            matchingTown.adjacencies.append(matchingAdjacentTown);
             
-            matchingAdjacentTown.adjacencies.append(matchingTown)
+            matchingAdjacentTown.adjacencies.append(matchingTown);
 
 def getDistance(locationOne: Location, locationTwo: Location) -> float:
-    x1, y1 = float(locationOne.long), float(locationOne.lat)
-    x2, y2 = float(locationTwo.long), float(locationTwo.lat)
+    x1, y1 = float(locationOne.long), float(locationOne.lat);
+    x2, y2 = float(locationTwo.long), float(locationTwo.lat);
     
-    return math.sqrt(math.pow((x2 - x1), 2) + math.pow((y2 - y1), 2))
+    return math.sqrt(math.pow((x2 - x1), 2) + math.pow((y2 - y1), 2));
     
 def getNearestAdjacentTownToTarget(currentCity: Location, targetCity: Location) -> Location:
-    closestCity = None
-    lastDistance = 999
+    closestCity = None;
+    lastDistance = 999;
     
     for city in currentCity.adjacencies:
-        distance = getDistance(city, targetCity)
+        distance = getDistance(city, targetCity);
         
-        print("adjacent city {} distance to target is {}".format(city.name, distance))
+        print("adjacent city {} distance to target is {}".format(city.name, distance));
         
         if (distance < lastDistance):            
-            closestCity = city
-            lastDistance = distance
+            closestCity = city;
+            lastDistance = distance;
             
-    return closestCity
+    return closestCity;
         
 def main() -> None:
-    readCoordinates()
-    readAdjacencies()
+    readCoordinates();
+    readAdjacencies();
     
-    startingPoint = input("Enter the city you wish to start from: ")
+    startingPoint = input("Enter the city you wish to start from: ");
     
-    startingLocation = getLocation(startingPoint)
+    startingLocation = getLocation(startingPoint);
     
     if (startingPoint == None):
-        raise NameError("City {} not found".format(startingPoint))
+        raise NameError("City {} not found".format(startingPoint));
     
-    endingPoint = input("Enter your destination city: ")
+    endingPoint = input("Enter your destination city: ");
     
-    endingLocation = getLocation(endingPoint)
+    endingLocation = getLocation(endingPoint);
     
     if (endingPoint == None):
-        raise NameError("City {} not found".format(endingPoint))
+        raise NameError("City {} not found".format(endingPoint));
     
-    print("{}'s coordinatons are {}deg and {}deg".format(startingLocation.name, startingLocation.lat, startingLocation.long))
+    print("{}'s coordinatons are {}deg and {}deg".format(startingLocation.name, startingLocation.lat, startingLocation.long));
     
-    print("Goal destination {}'s coordinatons are {}deg and {}deg".format(endingLocation.name, endingLocation.lat, endingLocation.long))
+    print("Goal destination {}'s coordinatons are {}deg and {}deg".format(endingLocation.name, endingLocation.lat, endingLocation.long));
 
-    locationsVisited.append(startingLocation)
+    locationsVisited.append(startingLocation);
         
-    locationsVisited.append(startingLocation)
+    locationsVisited.append(startingLocation);
     
-    currentLocation = startingLocation
+    currentLocation = startingLocation;
     
-    error = False
+    error = False;
     
     while True:
-        currentLocation = getNearestAdjacentTownToTarget(currentLocation, endingLocation)
+        currentLocation = getNearestAdjacentTownToTarget(currentLocation, endingLocation);
         
-        print("Current location is {}".format(currentLocation.name))
+        print("Current location is {}".format(currentLocation.name));
         
         if (currentLocation in locationsVisited):
-            print("Hit a dead end, cities visited so far: ", end="")
+            print("Hit a dead end, cities visited so far: ", end="");
             
             for visitedLocation in locationsVisited:
-                print(" {}, ".format(visitedLocation.name), end="")
+                print(" {}, ".format(visitedLocation.name), end="");
                 
-            error = True
+            error = True;
             
-            break
+            break;
         
-        locationsVisited.append(currentLocation)
+        locationsVisited.append(currentLocation);
                 
         if (currentLocation.name == endingLocation.name):
-            break
+            break;
 
     if (not(error)):
-        print("Route found: ", end="")
+        print("Route found: ", end="");
         
         for visitedLocation in locationsVisited:
-            print(" {}, ".format(visitedLocation.name), end="")
+            print(" {}, ".format(visitedLocation.name), end="");
 
 if __name__ == "__main__":
-    main()
+    main();
     
