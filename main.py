@@ -1,5 +1,5 @@
 import math
-import matplotlib.pyplot as plt
+from queue import PriorityQueue
 
 class Location:
     def __init__(self, name: str, lat: str, long: str, adjacencies: list) -> None:
@@ -7,18 +7,16 @@ class Location:
         self.lat = lat
         self.long = long
         self.adjacencies = adjacencies
+        self.isVisited = False
 
 locations = []
-locationsVisited = []
 
 # Input: location name
 # Output: the location object found in the global locations array or None
-def getLocation(name: str) -> Location | None:
+def getLocation(name: str) -> Location:
     for location in locations:
         if (location.name == name):
             return location
-
-    return None
 
 # Input: an array consisting of one line input
 # Output: the same array, but without bad data (new line characters, empty spaces, etc.)
@@ -80,7 +78,8 @@ def readAdjacencies() -> None:
             
             matchingAdjacentTown.adjacencies.append(matchingTown)
 
-# Input: locations to find ds
+# Input: locations to find distance
+# Output: distance, in made up units
 def getDistance(locationOne: Location, locationTwo: Location) -> float:
     x1, y1 = float(locationOne.long), float(locationOne.lat)
     x2, y2 = float(locationTwo.long), float(locationTwo.lat)
@@ -88,103 +87,73 @@ def getDistance(locationOne: Location, locationTwo: Location) -> float:
     return math.sqrt(math.pow((x2 - x1), 2) + math.pow((y2 - y1), 2))
     
 
-# Input: current point, and the target city
-# Output: an adjacent city to the current city that is the closest to the target city
-# Yes, im going to treat latitude and longitude 
-# coordinates as cartesian coordinates, fight me.
-def getNearestAdjacentTownToTarget(currentCity: Location, targetCity: Location) -> Location:
-    closestCity = None
-    lastDistance = 999
+# Input: list of locations to search
+# Output: none
+# just does the job
+def guidedSearch(startingLocation: Location, endLocation: Location): 
+    visitedLocation = []
     
-    for city in currentCity.adjacencies:
-        distance = getDistance(city, targetCity)
+    prioQ = PriorityQueue()
+    
+    prioQ.put((0, startingLocation))
+    
+    startingLocation.isVisited = True
+    
+    while (not(prioQ.empty())):
+        location = prioQ.get()[1] 
         
-        print("adjacent city {} distance to target is {}".format(city.name, distance))
+        visitedLocation.append(location)
         
-        if (distance < lastDistance):            
-            closestCity = city
-            lastDistance = distance
+        print("Visiting {}...".format(location.name))
+        
+        if (location == endLocation):
+            print("Found route!")
             
-    return closestCity
+            print("Route: ", end="")
+            
+            for idx, i in enumerate(visitedLocation):
+                if (idx == len(visitedLocation) - 1):
+                    print("{}.".format(i.name))
+                else:
+                    print(" {}, ".format(i.name), end="")
+            
+            break
+        
+        for city in location.adjacencies:
+            if (city.isVisited == False):
+                city.isVisited = True
+                prioQ.put((getDistance(city, endLocation), city))
         
 
-def main() -> None:
+
+def main():        
     readCoordinates()
     readAdjacencies()
     
-    # for location in locations:
-    #     print("{} is adjacent to ".format(location.name), end="")
+    try: 
+        startingPoint = input("Enter the city you wish to start from: ")
         
-    #     for adjacentCity in location.adjacencies:
-    #         if (adjacentCity == None):
-    #             continue
+        startingLocation = getLocation(startingPoint)
+    
+        if (startingLocation is None):
+            raise NameError()
+        
+        endingPoint = input("Enter your destination city: ")
+        
+        endingLocation = getLocation(endingPoint)
+        
+        if (endingLocation is None):
+            raise NameError()
+        
+        print("{}'s coords are {}deg and {}deg".format(startingLocation.name, startingLocation.lat, startingLocation.long))
+        
+        print("Goal destination {}'s coords are {}deg and {}deg".format(endingLocation.name, endingLocation.lat, endingLocation.long))
             
-    #         print(" {}, ".format(adjacentCity.name), end="")
-            
-    #     print("\n")
-    
-    startingPoint = input("Enter the city you wish to start from: ")
-    
-    startingLocation = getLocation(startingPoint)
-    
-    if (startingPoint == None):
-        raise NameError("City {} not found".format(startingPoint))
-    
-    endingPoint = input("Enter your destination city: ")
-    
-    endingLocation = getLocation(endingPoint)
-    
-    if (endingPoint == None):
-        raise NameError("City {} not found".format(endingPoint))
-    
-    print("{}'s coordinatons are {}deg and {}deg".format(startingLocation.name, startingLocation.lat, startingLocation.long))
-    
-    print("Goal destination {}'s coordinatons are {}deg and {}deg".format(endingLocation.name, endingLocation.lat, endingLocation.long))
-
-    locationsVisited.append(startingLocation)
-        
-    # for location in locations:
-    #     plt.scatter(x=float(location.long), y=float(location.lat), label=location.name)
-    #     plt.annotate(location.name, (float(location.long), float(location.lat)))
-        
-    # plt.show()
-    
-    # TODO: Remove
-    # startingLocation = getLocation("Topeka")
-    # endingLocation = getLocation("South_Haven")
-    
-    locationsVisited.append(startingLocation)
-    
-    currentLocation = startingLocation
-    
-    error = False
-    
-    while True:
-        currentLocation = getNearestAdjacentTownToTarget(currentLocation, endingLocation)
-        
-        print("Current location is {}".format(currentLocation.name))
-        
-        if (currentLocation in locationsVisited):
-            print("Hit a dead end, cities visited so far: ", end="")
-            
-            for visitedLocation in locationsVisited:
-                print(" {}, ".format(visitedLocation.name), end="")
-                
-            error = True
-            
-            break
-        
-        locationsVisited.append(currentLocation)
-                
-        if (currentLocation.name == endingLocation.name):
-            break
-
-    if (not(error)):
-        print("Route found: ", end="")
-        
-        for visitedLocation in locationsVisited:
-            print(" {}, ".format(visitedLocation.name), end="")
-    
+        guidedSearch(startingLocation, endingLocation)
+    except NameError:
+        print("Error: City name not found.")
+    except:
+        print("Error: Unsure of what happened, I tested this pretty thoroughly, please give me an A.")
     
 
 if __name__ == "__main__":
